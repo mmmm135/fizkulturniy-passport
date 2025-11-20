@@ -1,4 +1,4 @@
-// ======= app.js (Физкультурный паспорт - С кнопкой удаления) =======
+// ======= Физкультурный паспорт =======
 
 (function insertCustomStyles() {
   const css = `
@@ -108,7 +108,7 @@ const EXERCISES = {
   jumpLong: { label: "Прыжок", unit: "см", type: "strength", hint: "см" },
   ropeJump: { label: "Скакалка", unit: "раз", type: "strength", hint: "раз" },
   pullUps: { label: "Подтяг.", unit: "раз", type: "strength", hint: "раз" }, // Мальчики + Дев 5-10 (низкая)
-  pushUps: { label: "Отжим.", unit: "раз", type: "strength", hint: "раз" },  // Дев 11 (пол)
+  pushUps: { label: "Отжим.", unit: "раз", type: "strength", hint: "раз" }, // Дев 11 (пол)
   sitUps: { label: "Пресс", unit: "раз", type: "strength", hint: "раз" },
   flexibility: { label: "Гибкость", unit: "см", type: "strength", hint: "см" },
   runLong: { label: "Бег 6мин", unit: "м", type: "strength", hint: "метры" },
@@ -117,7 +117,8 @@ const EXERCISES = {
 // Массивы [10 баллов, ..., 1 балл]. Если значения нет (прочерк), стоит null.
 const NORMS = {
   5: {
-    M: { // Таблица 5
+    M: {
+      // Таблица 5
       run30m: [5.3, 5.5, 5.6, 5.7, 5.9, 6.1, 6.4, 6.7, 7.0, 7.2],
       shuttle4x9: [10.1, 10.3, 10.5, 10.7, 10.9, 11.3, 11.7, 12.1, 12.5, 12.9],
       jumpLong: [179, 174, 170, 165, 160, 151, 143, 133, 123, 114],
@@ -125,9 +126,9 @@ const NORMS = {
       pullUps: [5, null, null, null, null, 1, null, null, null, null], // 10б=5раз, 6б=1раз
       sitUps: null, // У мальчиков нет норматива пресс в таблице 5
       flexibility: [8, 6, 5, 3, 1, -3, -7, -11, -14, -18],
-      runLong: [1140, 1080, 1020, 1000, 950, 900, 860, 800, 710, 700] // 6-мин бег
+      runLong: [1140, 1080, 1020, 1000, 950, 900, 860, 800, 710, 700], // 6-мин бег
     },
-    F: { 
+    F: {
       run30m: [5.6, 5.7, 5.8, 5.9, 6.0, 6.2, 6.4, 6.7, 6.9, 7.1],
       shuttle4x9: [10.4, 10.7, 10.9, 11.1, 11.3, 11.8, 12.3, 12.7, 13.2, 13.6],
       jumpLong: [167, 162, 157, 153, 148, 138, 129, 120, 110, 100],
@@ -135,21 +136,22 @@ const NORMS = {
       pullUps: [16, 14, 12, 10, 8, 6, 4, 2, 1, 0], // Низкая перекладина (Таблица 6)
       sitUps: [47, 45, 43, 41, 39, 35, 31, 27, 23, 19], // 30 сек
       flexibility: [12, 11, 9, 8, 6, 3, 0, -4, -7, -10],
-      runLong: [1110, 1000, 970, 920, 890, 850, 800, 760, 660, 650]
+      runLong: [1110, 1000, 970, 920, 890, 850, 800, 760, 660, 650],
     },
   },
   6: {
-    M: { // Таблица 7
+    M: {
+      // Таблица 7
       run30m: [5.2, 5.3, 5.4, 5.5, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6],
       shuttle4x9: [9.6, 9.8, 10.0, 10.2, 10.4, 10.8, 11.2, 11.6, 12.0, 12.3],
       jumpLong: [189, 184, 179, 174, 169, 160, 150, 140, 130, 120],
       ropeJump: [96, 90, 82, 77, 74, 65, 53, 44, 32, 26],
-      pullUps: [6, 5, 4, 3, 2, 1, null, null, null, null], 
+      pullUps: [6, 5, 4, 3, 2, 1, null, null, null, null],
       sitUps: null,
       flexibility: [9, 7, 5, 3, 2, -2, -5, -9, -12, -16],
-      runLong: [1150, 1080, 1030, 1000, 960, 920, 870, 800, 710, 700]
+      runLong: [1150, 1080, 1030, 1000, 960, 920, 870, 800, 710, 700],
     },
-    F: { 
+    F: {
       run30m: [5.3, 5.4, 5.6, 5.7, 5.8, 6.0, 6.3, 6.5, 6.8, 7.0],
       shuttle4x9: [10.3, 10.5, 10.7, 10.9, 11.1, 11.5, 11.9, 12.3, 12.7, 13.1],
       jumpLong: [174, 169, 165, 160, 156, 146, 137, 128, 119, 110],
@@ -157,21 +159,22 @@ const NORMS = {
       pullUps: [17, 15, 13, 11, 9, 7, 5, 3, 2, 1], // Низкая (Таблица 8)
       sitUps: [50, 48, 46, 43, 41, 37, 32, 28, 23, 19], // 30 сек
       flexibility: [15, 13, 11, 10, 8, 4, 1, -3, -6, -10],
-      runLong: [1220, 1190, 1130, 1090, 1030, 1000, 950, 890, 770, 760]
+      runLong: [1220, 1190, 1130, 1090, 1030, 1000, 950, 890, 770, 760],
     },
   },
   7: {
-    M: { // Таблица 9
+    M: {
+      // Таблица 9
       run30m: [4.9, 5.0, 5.1, 5.2, 5.3, 5.5, 5.8, 6.0, 6.2, 6.4],
       shuttle4x9: [9.4, 9.6, 9.8, 9.9, 10.1, 10.4, 10.7, 11.0, 11.3, 11.7],
       jumpLong: [206, 201, 195, 190, 185, 174, 164, 153, 143, 132],
       ropeJump: [118, 110, 105, 97, 85, 74, 63, 50, 44, 36],
-      pullUps: [7, 6, 5, 4, 3, 2, 1, null, null, null], 
+      pullUps: [7, 6, 5, 4, 3, 2, 1, null, null, null],
       sitUps: null,
       flexibility: [11, 9, 8, 6, 5, 1, -2, -5, -8, -11],
-      runLong: [1280, 1230, 1200, 1150, 1110, 1080, 1040, 1000, 920, 910]
+      runLong: [1280, 1230, 1200, 1150, 1110, 1080, 1040, 1000, 920, 910],
     },
-    F: { 
+    F: {
       run30m: [5.2, 5.3, 5.4, 5.5, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6],
       shuttle4x9: [10.2, 10.3, 10.5, 10.6, 10.8, 11.1, 11.4, 11.7, 12.0, 12.3],
       jumpLong: [183, 178, 174, 169, 164, 155, 146, 137, 128, 119],
@@ -179,21 +182,22 @@ const NORMS = {
       pullUps: [18, 16, 14, 12, 10, 8, 6, 4, 2, 1], // Низкая
       sitUps: [51, 49, 47, 45, 43, 40, 36, 32, 29, 25], // 30 сек
       flexibility: [17, 15, 13, 11, 10, 8, 5, 2, -1, -4],
-      runLong: [1190, 1120, 1080, 1030, 1000, 980, 930, 890, 780, 770]
+      runLong: [1190, 1120, 1080, 1030, 1000, 980, 930, 890, 780, 770],
     },
   },
   8: {
-    M: { // Таблица 11
+    M: {
+      // Таблица 11
       run30m: [4.7, 4.8, 4.9, 5.0, 5.1, 5.3, 5.5, 5.7, 5.9, 6.0],
       shuttle4x9: [9.2, 9.4, 9.5, 9.7, 9.8, 10.1, 10.4, 10.7, 10.9, 11.2],
       jumpLong: [217, 212, 208, 203, 198, 189, 179, 170, 160, 151],
       ropeJump: [123, 115, 103, 96, 89, 80, 72, 58, 45, 38],
-      pullUps: [9, 8, 7, 6, 5, 4, 2, 1, null, null], 
+      pullUps: [9, 8, 7, 6, 5, 4, 2, 1, null, null],
       sitUps: null,
       flexibility: [13, 11, 9, 8, 6, 2, -1, -5, -8, -12],
-      runLong: [1350, 1300, 1250, 1230, 1200, 1150, 1100, 1040, 1000, 990]
+      runLong: [1350, 1300, 1250, 1230, 1200, 1150, 1100, 1040, 1000, 990],
     },
-    F: { 
+    F: {
       run30m: [5.1, 5.3, 5.4, 5.5, 5.6, 5.8, 6.0, 6.2, 6.5, 6.7],
       shuttle4x9: [10.1, 10.3, 10.4, 10.6, 10.8, 11.1, 11.4, 11.8, 12.1, 12.4],
       jumpLong: [184, 180, 175, 170, 165, 155, 146, 136, 126, 117],
@@ -201,11 +205,12 @@ const NORMS = {
       pullUps: [19, 17, 15, 13, 11, 9, 7, 5, 3, 1], // Низкая
       sitUps: [52, 50, 48, 46, 44, 41, 37, 33, 30, 26], // 30 сек
       flexibility: [16, 15, 13, 12, 10, 7, 4, 1, -2, -5],
-      runLong: [1210, 1150, 1100, 1070, 1040, 1000, 980, 940, 840, 830]
+      runLong: [1210, 1150, 1100, 1070, 1040, 1000, 980, 940, 840, 830],
     },
   },
   9: {
-    M: { // Таблица 13
+    M: {
+      // Таблица 13
       run30m: [4.5, 4.7, 4.8, 4.9, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0],
       shuttle4x9: [9.0, 9.1, 9.3, 9.4, 9.6, 9.9, 10.1, 10.4, 10.7, 11.0],
       jumpLong: [233, 228, 223, 218, 212, 202, 192, 181, 171, 160],
@@ -213,9 +218,9 @@ const NORMS = {
       pullUps: [12, 11, 10, 8, 7, 5, 2, 1, null, null],
       sitUps: null,
       flexibility: [14, 12, 11, 10, 9, 6, 4, 1, -1, -3],
-      runLong: [1410, 1370, 1330, 1300, 1280, 1220, 1170, 1130, 1100, 1080]
+      runLong: [1410, 1370, 1330, 1300, 1280, 1220, 1170, 1130, 1100, 1080],
     },
-    F: { 
+    F: {
       run30m: [5.1, 5.2, 5.3, 5.4, 5.5, 5.7, 5.9, 6.1, 6.3, 6.5],
       shuttle4x9: [10.0, 10.1, 10.3, 10.5, 10.7, 11.1, 11.4, 11.8, 12.1, 12.5],
       jumpLong: [189, 184, 180, 176, 171, 163, 154, 145, 136, 128],
@@ -223,11 +228,12 @@ const NORMS = {
       pullUps: [20, 18, 16, 14, 12, 10, 8, 6, 4, 2], // Низкая
       sitUps: [55, 53, 51, 49, 47, 43, 39, 35, 31, 28], // 1 мин
       flexibility: [19, 17, 15, 14, 12, 9, 6, 2, -1, -4],
-      runLong: [1215, 1180, 1120, 1100, 1070, 1000, 960, 910, 850, 855] // В табл. 13 910(2) и 855(1?)
+      runLong: [1215, 1180, 1120, 1100, 1070, 1000, 960, 910, 850, 855], // В табл. 13 910(2) и 855(1?)
     },
   },
   10: {
-    M: { // Таблица 15
+    M: {
+      // Таблица 15
       run30m: [4.3, 4.4, 4.5, 4.6, 4.7, 4.9, 5.1, 5.3, 5.5, 5.7],
       shuttle4x9: [8.8, 8.9, 9.0, 9.2, 9.3, 9.6, 9.8, 10.1, 10.3, 10.6],
       jumpLong: [247, 242, 236, 231, 225, 215, 204, 193, 182, 171],
@@ -235,9 +241,9 @@ const NORMS = {
       pullUps: [13, 12, 11, 10, 9, 7, 4, 2, 1, null],
       sitUps: null,
       flexibility: [17, 16, 14, 12, 10, 6, 3, -1, -5, -8],
-      runLong: [1430, 1400, 1380, 1350, 1320, 1300, 1280, 1250, 1210, 1170]
+      runLong: [1430, 1400, 1380, 1350, 1320, 1300, 1280, 1250, 1210, 1170],
     },
-    F: { 
+    F: {
       run30m: [4.9, 5.0, 5.1, 5.2, 5.3, 5.5, 5.7, 6.0, 6.2, 6.4],
       shuttle4x9: [9.8, 9.9, 10.1, 10.3, 10.5, 10.8, 11.2, 11.5, 11.9, 12.2],
       jumpLong: [196, 191, 187, 182, 177, 168, 159, 149, 140, 131],
@@ -245,11 +251,12 @@ const NORMS = {
       pullUps: [24, 21, 19, 18, 17, 15, 12, 11, 10, 9], // Из Таблицы 16 Навыки (Низкая)
       sitUps: [58, 56, 54, 52, 50, 46, 42, 38, 34, 30], // 1 мин
       flexibility: [21, 20, 18, 16, 15, 12, 8, 5, 2, -2], // Таблица 15
-      runLong: [1285, 1250, 1200, 1170, 1130, 1110, 1090, 1040, 980, 910]
+      runLong: [1285, 1250, 1200, 1170, 1130, 1110, 1090, 1040, 980, 910],
     },
   },
   11: {
-    M: { // Таблица 17
+    M: {
+      // Таблица 17
       run30m: [4.2, 4.3, 4.4, 4.5, 4.6, 4.8, 5.0, 5.1, 5.3, 5.5],
       shuttle4x9: [8.6, 8.8, 8.9, 9.0, 9.1, 9.3, 9.5, 9.7, 9.9, 10.1],
       jumpLong: [252, 247, 242, 237, 231, 220, 212, 203, 192, 182],
@@ -257,20 +264,20 @@ const NORMS = {
       pullUps: [16, 15, 13, 12, 11, 8, 6, 3, 2, 1],
       sitUps: null,
       flexibility: [19, 16, 14, 12, 10, 6, 3, -1, -5, -8],
-      runLong: [1505, 1460, 1410, 1370, 1335, 1300, 1210, 1170, 1100, 1010]
+      runLong: [1505, 1460, 1410, 1370, 1335, 1300, 1210, 1170, 1100, 1010],
     },
-    F: { 
+    F: {
       run30m: [5.0, 5.1, 5.2, 5.3, 5.4, 5.5, 5.7, 5.9, 6.1, 6.3],
       shuttle4x9: [9.8, 9.9, 10.1, 10.2, 10.4, 10.7, 11.0, 11.2, 11.5, 11.8],
       jumpLong: [200, 194, 189, 184, 179, 168, 158, 147, 137, 126],
       ropeJump: [144, 140, 133, 128, 122, 110, 100, 85, 68, 50],
       // !!! В 11 классе в Таблице 18 у девушек НЕТ подтягиваний, есть ОТЖИМАНИЯ (Floor Push-ups)
       // Значения для отжиманий из Таблицы 18 (Skills): 10б=18, ..., 1б=1.
-      pushUps: [18, 15, 12, 9, 6, 5, 4, 3, 2, 1], 
+      pushUps: [18, 15, 12, 9, 6, 5, 4, 3, 2, 1],
       pullUps: null, // Убираем подтягивания для 11 кл
       sitUps: [57, 55, 53, 52, 50, 47, 44, 41, 38, 35], // 1 мин
       flexibility: [22, 21, 19, 17, 16, 12, 9, 5, 2, -2],
-      runLong: [1245, 1200, 1180, 1145, 1105, 1090, 1040, 990, 930, 895]
+      runLong: [1245, 1200, 1180, 1145, 1105, 1090, 1040, 990, 930, 895],
     },
   },
 };
@@ -282,36 +289,38 @@ let selectedClassKey = null;
 let sortState = 0;
 
 function sortClasses(keys) {
-    return keys.sort((a, b) => {
-        const numA = parseInt(a) || 0;
-        const numB = parseInt(b) || 0;
-        if (numA !== numB) return numA - numB;
-        return a.localeCompare(b);
-    });
+  return keys.sort((a, b) => {
+    const numA = parseInt(a) || 0;
+    const numB = parseInt(b) || 0;
+    if (numA !== numB) return numA - numB;
+    return a.localeCompare(b);
+  });
 }
 
 // Инициализация и починка данных
 function validateAndRepairData() {
   // Создаем структуру классов, если база пустая
   if (Object.keys(classesData).length === 0) {
-      ["5А", "6А", "7А", "8А", "9А", "10А", "11А"].forEach((cls) => (classesData[cls] = []));
-      // ------------------------------------------------------------------
-      // ⚠️ ОТКЛЮЧЕНО СОЗДАНИЕ ПРИМЕРНЫХ УЧЕНИКОВ ПО ВАШЕЙ ПРОСЬБЕ
-      // classesData["10А"].push(
-      //   { id: 1, name: "Иванов Иван", sex: "Мужской", group: "Основная", year: 2008, results: {} },
-      //   { id: 2, name: "Смирнова Анна", sex: "Женский", group: "Основная", year: 2008, results: {} }
-      // );
-      // ------------------------------------------------------------------
-      saveData();
-      return;
+    ["5А", "6А", "7А", "8А", "9А", "10А", "11А"].forEach(
+      (cls) => (classesData[cls] = [])
+    );
+    // ------------------------------------------------------------------
+    // ⚠️ ОТКЛЮЧЕНО СОЗДАНИЕ ПРИМЕРНЫХ УЧЕНИКОВ ПО ВАШЕЙ ПРОСЬБЕ
+    // classesData["10А"].push(
+    //   { id: 1, name: "Иванов Иван", sex: "Мужской", group: "Основная", year: 2008, results: {} },
+    //   { id: 2, name: "Смирнова Анна", sex: "Женский", group: "Основная", year: 2008, results: {} }
+    // );
+    // ------------------------------------------------------------------
+    saveData();
+    return;
   }
   // Проверяем целостность
   let fixed = false;
   for (const key in classesData) {
-      if (!Array.isArray(classesData[key])) {
-          classesData[key] = [];
-          fixed = true;
-      }
+    if (!Array.isArray(classesData[key])) {
+      classesData[key] = [];
+      fixed = true;
+    }
   }
   if (fixed) saveData();
 }
@@ -334,7 +343,7 @@ function showToast() {
 
 function calculateGrade(normKey, value, sex, classNum, group) {
   if (!value || value === "") return { score: "-", css: "g-none" };
-  
+
   let val = parseFloat(String(value).replace(",", "."));
   if (isNaN(val)) return { score: "-", css: "g-none" };
 
@@ -344,32 +353,38 @@ function calculateGrade(normKey, value, sex, classNum, group) {
 
   let effectiveClass = classNum;
   if (isNaN(effectiveClass)) effectiveClass = parseInt(classNum);
-  if (!NORMS[effectiveClass]) effectiveClass = 5; 
+  if (!NORMS[effectiveClass]) effectiveClass = 5;
 
   const genderKey = sex === "Мужской" ? "M" : "F";
   const genderNorms = NORMS[effectiveClass]?.[genderKey];
-  
+
   if (!genderNorms) return { score: "-", css: "g-none" };
 
   // Если для данного пола/класса нет норматива
   if (!genderNorms[normKey]) return { score: "-", css: "g-none" };
-  
+
   const table = genderNorms[normKey];
   const type = EXERCISES[normKey].type;
   let score = 0;
 
   if (type === "speed") {
     for (let i = 0; i < 10; i++) {
-      if (table[i] !== null && val <= table[i]) { score = 10 - i; break; }
+      if (table[i] !== null && val <= table[i]) {
+        score = 10 - i;
+        break;
+      }
     }
-    if (score === 0 && table[9] !== null && val > table[9]) score = 1; 
+    if (score === 0 && table[9] !== null && val > table[9]) score = 1;
   } else {
     for (let i = 0; i < 10; i++) {
-      if (table[i] !== null && val >= table[i]) { score = 10 - i; break; }
+      if (table[i] !== null && val >= table[i]) {
+        score = 10 - i;
+        break;
+      }
     }
     if (score === 0 && table[9] !== null && val < table[9]) score = 1;
   }
-  
+
   if (score === 0) score = 1;
   return { score: score, css: `g-${score}` };
 }
@@ -393,21 +408,26 @@ window.switchView = (view) => {
     const drawer = document.getElementById("mobileMenuDrawer");
     const overlay = document.getElementById("mobileMenuOverlay");
     if (drawer) drawer.classList.add("-translate-x-full");
-    if (overlay) { overlay.classList.add("hidden"); overlay.classList.add("opacity-0"); }
+    if (overlay) {
+      overlay.classList.add("hidden");
+      overlay.classList.add("opacity-0");
+    }
 
     try {
-        if (view === "dashboard") renderDashboard();
-        else if (view === "students") renderStudents();
-        else if (view === "journal") renderJournal();
+      if (view === "dashboard") renderDashboard();
+      else if (view === "students") renderStudents();
+      else if (view === "journal") renderJournal();
     } catch (e) {
-        console.error(e);
-        container.innerHTML = `<div class="p-10 text-center text-red-500">Ошибка отрисовки: ${e.message}</div>`;
+      console.error(e);
+      container.innerHTML = `<div class="p-10 text-center text-red-500">Ошибка отрисовки: ${e.message}</div>`;
     }
   }
 };
 
 window.downloadData = () => {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(classesData));
+  const dataStr =
+    "data:text/json;charset=utf-8," +
+    encodeURIComponent(JSON.stringify(classesData));
   const node = document.createElement("a");
   node.href = dataStr;
   node.download = "fizra_db.json";
@@ -426,18 +446,18 @@ window.editStudent = (id) => {
     document.getElementById("mSex").value = s.sex;
     document.getElementById("mGroup").value = s.group;
     document.getElementById("mYear").value = s.year || "";
-    
+
     // Сброс стилей ошибок и класса active
     document.querySelectorAll(".floating").forEach((el) => {
-        el.classList.add("active");
-        el.querySelector('input, select').classList.remove('input-error');
-        const err = el.querySelector('.error-text');
-        if(err) err.remove();
+      el.classList.add("active");
+      el.querySelector("input, select").classList.remove("input-error");
+      const err = el.querySelector(".error-text");
+      if (err) err.remove();
     });
 
     // ПОКАЗЫВАЕМ КНОПКУ УДАЛИТЬ (т.к. это редактирование)
     const delBtn = document.getElementById("mDelete");
-    if(delBtn) delBtn.style.display = "block";
+    if (delBtn) delBtn.style.display = "block";
 
     document.getElementById("studentModal").showModal();
   }
@@ -446,7 +466,10 @@ window.editStudent = (id) => {
 // ======= 4. Render Functions =======
 function renderDashboard() {
   const container = document.getElementById("viewContainer");
-  const totalStudents = Object.values(classesData).reduce((a, b) => a + b.length, 0);
+  const totalStudents = Object.values(classesData).reduce(
+    (a, b) => a + b.length,
+    0
+  );
 
   container.innerHTML = `
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 fade-enter">
@@ -458,7 +481,9 @@ function renderDashboard() {
        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden">
           <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-layer-group text-6xl text-emerald-600"></i></div>
           <p class="text-slate-400 text-xs uppercase font-bold tracking-wider">Классов</p>
-          <p class="text-3xl font-bold text-slate-800 mt-2">${Object.keys(classesData).length}</p>
+          <p class="text-3xl font-bold text-slate-800 mt-2">${
+            Object.keys(classesData).length
+          }</p>
        </div>
     </div>
     <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm fade-enter" style="animation-delay: 0.1s">
@@ -478,8 +503,8 @@ function renderDashboard() {
 function renderStudents() {
   const container = document.getElementById("viewContainer");
   if (!selectedClassKey || !classesData[selectedClassKey]) {
-      const keys = sortClasses(Object.keys(classesData));
-      selectedClassKey = keys[0];
+    const keys = sortClasses(Object.keys(classesData));
+    selectedClassKey = keys[0];
   }
 
   container.innerHTML = `
@@ -488,7 +513,9 @@ function renderStudents() {
           <div class="flex items-center gap-2 w-full sm:w-auto">
              <div class="flex gap-1">
                  <select id="stdClassSelect" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold outline-none focus:border-blue-500 cursor-pointer w-28">
-                    ${sortClasses(Object.keys(classesData)).map((k) => `<option value="${k}">${k}</option>`).join("")}
+                    ${sortClasses(Object.keys(classesData))
+                      .map((k) => `<option value="${k}">${k}</option>`)
+                      .join("")}
                  </select>
                  <button id="addClassBtn" class="w-10 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 font-bold flex items-center justify-center" title="Добавить класс"><i class="fa-solid fa-plus"></i></button>
              </div>
@@ -540,15 +567,24 @@ function renderStudents() {
 
   const select = document.getElementById("stdClassSelect");
   if (select && selectedClassKey) select.value = selectedClassKey;
-  select.onchange = () => { selectedClassKey = select.value; renderStudentList(); };
-  
+  select.onchange = () => {
+    selectedClassKey = select.value;
+    renderStudentList();
+  };
+
   document.getElementById("addClassBtn").onclick = () => {
-      const newClass = prompt("Введите название класса (например: 9Б):");
-      if (newClass && newClass.trim() !== "") {
-          if (classesData[newClass]) { alert("Такой класс уже существует!"); selectedClassKey = newClass; } 
-          else { classesData[newClass] = []; selectedClassKey = newClass; saveData(); }
-          renderStudents();
+    const newClass = prompt("Введите название класса (например: 9Б):");
+    if (newClass && newClass.trim() !== "") {
+      if (classesData[newClass]) {
+        alert("Такой класс уже существует!");
+        selectedClassKey = newClass;
+      } else {
+        classesData[newClass] = [];
+        selectedClassKey = newClass;
+        saveData();
       }
+      renderStudents();
+    }
   };
 
   document.getElementById("importFile").onchange = (e) => {
@@ -562,7 +598,9 @@ function renderStudents() {
         selectedClassKey = sortClasses(Object.keys(classesData))[0];
         renderStudents();
         alert("База успешно загружена!");
-      } catch (err) { alert("Ошибка чтения файла: " + err.message); }
+      } catch (err) {
+        alert("Ошибка чтения файла: " + err.message);
+      }
     };
     reader.readAsText(file);
   };
@@ -572,17 +610,17 @@ function renderStudents() {
     document.getElementById("mId").value = "new";
     document.getElementById("mName").value = "";
     document.getElementById("mYear").value = "";
-    
+
     document.querySelectorAll(".floating").forEach((el) => {
-        el.classList.remove("active");
-        el.querySelector('input, select').classList.remove('input-error');
-        const err = el.querySelector('.error-text');
-        if(err) err.remove();
+      el.classList.remove("active");
+      el.querySelector("input, select").classList.remove("input-error");
+      const err = el.querySelector(".error-text");
+      if (err) err.remove();
     });
 
     // СКРЫВАЕМ КНОПКУ УДАЛИТЬ (т.к. это новый ученик)
     const delBtn = document.getElementById("mDelete");
-    if(delBtn) delBtn.style.display = "none";
+    if (delBtn) delBtn.style.display = "none";
 
     modal.showModal();
   };
@@ -592,17 +630,19 @@ function renderStudents() {
   // === DELETE LOGIC ===
   const delBtn = document.getElementById("mDelete");
   if (delBtn) {
-      delBtn.onclick = () => {
-          const id = document.getElementById("mId").value;
-          if (!id || id === "new") return;
-          
-          if (confirm("Точно удалить ученика?")) {
-              classesData[selectedClassKey] = classesData[selectedClassKey].filter(s => s.id != id);
-              saveData();
-              renderStudentList();
-              modal.close();
-          }
-      };
+    delBtn.onclick = () => {
+      const id = document.getElementById("mId").value;
+      if (!id || id === "new") return;
+
+      if (confirm("Точно удалить ученика?")) {
+        classesData[selectedClassKey] = classesData[selectedClassKey].filter(
+          (s) => s.id != id
+        );
+        saveData();
+        renderStudentList();
+        modal.close();
+      }
+    };
   }
 
   // === VALIDATION & SAVE LOGIC ===
@@ -610,33 +650,35 @@ function renderStudents() {
     const idField = document.getElementById("mId");
     const nameField = document.getElementById("mName");
     const yearField = document.getElementById("mYear");
-    
-    document.querySelectorAll('.error-text').forEach(e => e.remove());
-    document.querySelectorAll('.input-error').forEach(e => e.classList.remove('input-error'));
+
+    document.querySelectorAll(".error-text").forEach((e) => e.remove());
+    document
+      .querySelectorAll(".input-error")
+      .forEach((e) => e.classList.remove("input-error"));
 
     let isValid = true;
 
     // Name Validation
     const nameVal = nameField.value.trim();
     if (!nameVal || /[^а-яА-ЯёЁa-zA-Z\s\-]/.test(nameVal)) {
-        nameField.classList.add('input-error');
-        const err = document.createElement('div');
-        err.className = 'error-text';
-        err.innerText = 'Только буквы';
-        nameField.parentNode.appendChild(err);
-        isValid = false;
+      nameField.classList.add("input-error");
+      const err = document.createElement("div");
+      err.className = "error-text";
+      err.innerText = "Только буквы";
+      nameField.parentNode.appendChild(err);
+      isValid = false;
     }
 
     // Year Validation
     const yearVal = parseInt(yearField.value);
     const currentYear = new Date().getFullYear();
     if (!yearVal || yearVal < 2000 || yearVal > currentYear) {
-        yearField.classList.add('input-error');
-        const err = document.createElement('div');
-        err.className = 'error-text';
-        err.innerText = `2000 - ${currentYear}`;
-        yearField.parentNode.appendChild(err);
-        isValid = false;
+      yearField.classList.add("input-error");
+      const err = document.createElement("div");
+      err.className = "error-text";
+      err.innerText = `2000 - ${currentYear}`;
+      yearField.parentNode.appendChild(err);
+      isValid = false;
     }
 
     if (!isValid) return;
@@ -648,9 +690,13 @@ function renderStudents() {
       sex: document.getElementById("mSex").value,
       group: document.getElementById("mGroup").value,
       year: yearVal,
-      results: id === "new" ? {} : classesData[selectedClassKey].find((s) => s.id == id)?.results || {},
+      results:
+        id === "new"
+          ? {}
+          : classesData[selectedClassKey].find((s) => s.id == id)?.results ||
+            {},
     };
-    
+
     if (id === "new") classesData[selectedClassKey].push(student);
     else {
       const idx = classesData[selectedClassKey].findIndex((s) => s.id == id);
@@ -661,7 +707,9 @@ function renderStudents() {
     modal.close();
   };
 
-  document.querySelectorAll(".floating input, .floating select").forEach((inp) => {
+  document
+    .querySelectorAll(".floating input, .floating select")
+    .forEach((inp) => {
       const check = () => {
         if (inp.value) inp.parentElement.classList.add("active");
         else inp.parentElement.classList.remove("active");
@@ -669,7 +717,7 @@ function renderStudents() {
       inp.addEventListener("blur", check);
       inp.addEventListener("input", check);
       inp.addEventListener("change", check);
-  });
+    });
   renderStudentList();
 }
 
@@ -680,30 +728,61 @@ function renderStudentList() {
     list.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-slate-400 py-10"><i class="fa-solid fa-clipboard-list text-4xl mb-3 text-slate-300"></i><p>Класс ${selectedClassKey} пуст.</p><p class="text-sm text-slate-300 mt-1">Добавьте учеников кнопкой выше.</p></div>`;
     return;
   }
-  list.innerHTML = students.sort((a, b) => a.name.localeCompare(b.name)).map(s => `
-        <div class="bg-white p-4 rounded-xl border border-slate-200 mb-3 flex justify-between items-center shadow-sm hover:shadow-md cursor-pointer transition group" onclick="editStudent(${s.id})">
+  list.innerHTML = students
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map(
+      (s) => `
+        <div class="bg-white p-4 rounded-xl border border-slate-200 mb-3 flex justify-between items-center shadow-sm hover:shadow-md cursor-pointer transition group" onclick="editStudent(${
+          s.id
+        })">
             <div class="flex items-center gap-4">
-                <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${s.sex === "Мужской" ? "bg-blue-50 text-blue-600" : "bg-pink-50 text-pink-600"}">${s.name[0]}</div>
+                <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
+                  s.sex === "Мужской"
+                    ? "bg-blue-50 text-blue-600"
+                    : "bg-pink-50 text-pink-600"
+                }">${s.name[0]}</div>
                 <div>
-                    <div class="font-bold text-slate-700 text-[15px]">${s.name}</div>
+                    <div class="font-bold text-slate-700 text-[15px]">${
+                      s.name
+                    }</div>
                     <div class="text-xs text-slate-400 mt-0.5 font-medium flex gap-2">
-                        <span class="${s.group === "Основная" ? "text-emerald-600" : "text-orange-600"}">${s.group}</span><span>•</span><span>${s.sex}</span><span>•</span><span>${s.year || "?"} г.р.</span>
+                        <span class="${
+                          s.group === "Основная"
+                            ? "text-emerald-600"
+                            : "text-orange-600"
+                        }">${s.group}</span><span>•</span><span>${
+        s.sex
+      }</span><span>•</span><span>${s.year || "?"} г.р.</span>
                     </div>
                 </div>
             </div>
             <div class="w-8 h-8 rounded-full bg-slate-50 text-slate-300 flex items-center justify-center group-hover:bg-blue-50 group-hover:text-blue-500 transition"><i class="fa-solid fa-pen"></i></div>
         </div>
-    `).join("");
+    `
+    )
+    .join("");
 }
 
 function renderJournal() {
   const container = document.getElementById("viewContainer");
-  const sortLabels = ["По алфавиту", "По возрасту (мл -> ст)", "По возрасту (ст -> мл)", "Сначала мальчики", "По группе"];
+  const sortLabels = [
+    "По алфавиту",
+    "По возрасту (мл -> ст)",
+    "По возрасту (ст -> мл)",
+    "Сначала мальчики",
+    "По группе",
+  ];
 
-  if (!selectedClassKey || !classesData[selectedClassKey] || classesData[selectedClassKey].length === 0) {
-      const sortedKeys = sortClasses(Object.keys(classesData));
-      const populatedClass = sortedKeys.find(k => classesData[k] && classesData[k].length > 0);
-      selectedClassKey = populatedClass || sortedKeys[0];
+  if (
+    !selectedClassKey ||
+    !classesData[selectedClassKey] ||
+    classesData[selectedClassKey].length === 0
+  ) {
+    const sortedKeys = sortClasses(Object.keys(classesData));
+    const populatedClass = sortedKeys.find(
+      (k) => classesData[k] && classesData[k].length > 0
+    );
+    selectedClassKey = populatedClass || sortedKeys[0];
   }
 
   container.innerHTML = `
@@ -711,10 +790,14 @@ function renderJournal() {
        <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row gap-3 justify-between items-center bg-white rounded-t-2xl z-20">
           <div class="flex gap-2 w-full sm:w-auto">
              <select id="jClass" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold outline-none cursor-pointer w-28 sm:w-auto text-center sm:text-left">
-                 ${sortClasses(Object.keys(classesData)).map((k) => `<option value="${k}">${k}</option>`).join("")}
+                 ${sortClasses(Object.keys(classesData))
+                   .map((k) => `<option value="${k}">${k}</option>`)
+                   .join("")}
              </select>
              <button id="sortBtn" class="flex-1 sm:flex-none px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm font-bold transition flex items-center gap-2">
-                 <i class="fa-solid fa-arrow-down-a-z"></i> <span>${sortLabels[sortState]}</span>
+                 <i class="fa-solid fa-arrow-down-a-z"></i> <span>${
+                   sortLabels[sortState]
+                 }</span>
              </button>
           </div>
           <div class="hidden sm:flex items-center gap-2 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg">
@@ -742,17 +825,19 @@ function renderJournal() {
     list.sort((a, b) => {
       if (sortState === 1) return (b.year || 0) - (a.year || 0);
       else if (sortState === 2) return (a.year || 0) - (b.year || 0);
-      else if (sortState === 3) { if (a.sex !== b.sex) return a.sex === "Мужской" ? -1 : 1; } 
-      else if (sortState === 4) {
+      else if (sortState === 3) {
+        if (a.sex !== b.sex) return a.sex === "Мужской" ? -1 : 1;
+      } else if (sortState === 4) {
         const order = { Основная: 0, Подготовительная: 1, СМГ: 2, ЛФК: 3 };
-        if (order[a.group] !== order[b.group]) return order[a.group] - order[b.group];
+        if (order[a.group] !== order[b.group])
+          return order[a.group] - order[b.group];
       }
       return a.name.localeCompare(b.name);
     });
 
     const content = document.getElementById("jContent");
     if (list.length === 0) {
-       content.innerHTML = `
+      content.innerHTML = `
         <div class="flex flex-col items-center justify-center h-full text-slate-400 py-20">
             <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
                 <i class="fa-solid fa-user-plus text-2xl text-slate-300"></i>
@@ -762,36 +847,58 @@ function renderJournal() {
                 Перейти к ученикам
             </button>
         </div>`;
-       return;
+      return;
     }
-    
+
     try {
-        if (window.innerWidth < 768) renderMobileJournal(content, list, selectedClassKey);
-        else renderDesktopJournal(content, list, selectedClassKey);
-    } catch(e) {
-        console.error(e);
-        content.innerHTML = `<div class="text-red-500 p-4">Ошибка таблицы: ${e.message}</div>`;
+      if (window.innerWidth < 768)
+        renderMobileJournal(content, list, selectedClassKey);
+      else renderDesktopJournal(content, list, selectedClassKey);
+    } catch (e) {
+      console.error(e);
+      content.innerHTML = `<div class="text-red-500 p-4">Ошибка таблицы: ${e.message}</div>`;
     }
   };
 
   cSel.onchange = refresh;
-  window.addEventListener("resize", refresh);
+
+  // FIX: Реакция только на изменение ширины (поворот), игнорируем высоту (клавиатура)
+  let lastWidth = window.innerWidth;
+  const onResize = () => {
+    if (window.innerWidth !== lastWidth) {
+      lastWidth = window.innerWidth;
+      refresh();
+    }
+  };
+  // Удаляем старый листенер, если есть
+  if (window.journalResizeHandler) {
+    window.removeEventListener("resize", window.journalResizeHandler);
+  }
+  window.journalResizeHandler = onResize;
+  window.addEventListener("resize", onResize);
+
   setTimeout(refresh, 0);
 }
 
 function renderDesktopJournal(container, students, cls) {
   const norms = Object.keys(EXERCISES);
-  const headers = norms.map(n => `
+  const headers = norms
+    .map(
+      (n) => `
         <th class="text-center min-w-[90px]">
             <div class="flex flex-col items-center justify-center h-full leading-tight py-1">
                 <span class="text-[11px] font-bold text-slate-700 mb-0.5">${EXERCISES[n].label}</span>
                 <span class="text-[9px] text-slate-400 font-medium bg-slate-100 px-1.5 py-0.5 rounded">${EXERCISES[n].unit}</span>
             </div>
-        </th>`).join("");
+        </th>`
+    )
+    .join("");
 
-  const rows = students.map((s) => {
+  const rows = students
+    .map((s) => {
       if (!s.results) s.results = {};
-      const inputs = norms.map((n) => {
+      const inputs = norms
+        .map((n) => {
           const val = s.results[n] || "";
           // Теперь это безопасно
           const g = calculateGrade(n, val, s.sex, parseInt(cls), s.group);
@@ -805,31 +912,45 @@ function renderDesktopJournal(container, students, cls) {
                         <div class="grade-badge ${g.css}">${g.score}</div>
                     </div>
                 </td>`;
-        }).join("");
+        })
+        .join("");
       return `
             <tr>
                 <td class="sticky-col pl-4 border-r border-slate-100 bg-white">
-                    <div class="font-bold text-sm text-slate-700 truncate max-w-[180px]">${s.name}</div>
+                    <div class="font-bold text-sm text-slate-700 truncate max-w-[180px]">${
+                      s.name
+                    }</div>
                 </td>
                 <td class="text-center text-xs">
-                    <span class="font-bold ${s.sex === "Мужской" ? "text-blue-600" : "text-pink-600"}">${s.sex === "Мужской" ? "М" : "Ж"}</span>
+                    <span class="font-bold ${
+                      s.sex === "Мужской" ? "text-blue-600" : "text-pink-600"
+                    }">${s.sex === "Мужской" ? "М" : "Ж"}</span>
                 </td>
                 <td class="text-center">
-                    <div class="inline-block w-2 h-2 rounded-full ${s.group === "Основная" ? "bg-emerald-400" : "bg-orange-400"}" title="${s.group}"></div>
+                    <div class="inline-block w-2 h-2 rounded-full ${
+                      s.group === "Основная"
+                        ? "bg-emerald-400"
+                        : "bg-orange-400"
+                    }" title="${s.group}"></div>
                 </td>
-                <td class="text-center text-xs font-medium text-slate-500">${s.year || '-'}</td>
+                <td class="text-center text-xs font-medium text-slate-500">${
+                  s.year || "-"
+                }</td>
                 ${inputs}
             </tr>`;
-    }).join("");
+    })
+    .join("");
 
   container.innerHTML = `<div class="table-container no-scrollbar"><table><thead><tr><th class="sticky-col text-left pl-4 shadow-sm w-[200px]">Ученик</th><th class="w-10">Пол</th><th class="w-10">Гр.</th><th class="w-12">Год</th>${headers}</tr></thead><tbody class="bg-white">${rows}</tbody></table></div>`;
   bindInputs(cls);
 }
 
 function renderMobileJournal(container, students, cls) {
-  container.innerHTML = students.map((s) => {
+  container.innerHTML = students
+    .map((s) => {
       if (!s.results) s.results = {};
-      const items = Object.keys(EXERCISES).map((n) => {
+      const items = Object.keys(EXERCISES)
+        .map((n) => {
           const val = s.results[n] || "";
           const g = calculateGrade(n, val, s.sex, parseInt(cls), s.group);
           return `
@@ -846,17 +967,28 @@ function renderMobileJournal(container, students, cls) {
                         <div class="norm-grade ${g.css}">${g.score}</div>
                     </div>
                 </div>`;
-        }).join("");
-        
+        })
+        .join("");
+
       return `
             <div class="student-card group">
                 <div class="card-header" onclick="const c=this.nextElementSibling; c.classList.toggle('hidden'); this.querySelector('.chevron').classList.toggle('rotate-180')">
                     <div class="flex flex-col">
-                        <div class="font-bold text-slate-800 text-[15px]">${s.name}</div>
+                        <div class="font-bold text-slate-800 text-[15px]">${
+                          s.name
+                        }</div>
                         <div class="text-xs text-slate-400 mt-1 flex gap-2 font-medium">
-                             <span class="${s.sex === "Мужской" ? "text-blue-500" : "text-pink-500"}">${s.sex}</span>
+                             <span class="${
+                               s.sex === "Мужской"
+                                 ? "text-blue-500"
+                                 : "text-pink-500"
+                             }">${s.sex}</span>
                              <span class="text-slate-300">•</span>
-                             <span class="${s.group === "Основная" ? "text-emerald-500" : "text-orange-500"}">${s.group}</span>
+                             <span class="${
+                               s.group === "Основная"
+                                 ? "text-emerald-500"
+                                 : "text-orange-500"
+                             }">${s.group}</span>
                              <span class="text-slate-300">•</span>
                              <span>${s.year || "?"} г.р.</span>
                         </div>
@@ -867,7 +999,8 @@ function renderMobileJournal(container, students, cls) {
                     <div class="norm-grid">${items}</div>
                 </div>
             </div>`;
-    }).join("");
+    })
+    .join("");
   bindInputs(cls);
 }
 
@@ -885,11 +1018,24 @@ function bindInputs(cls) {
       if (student) {
         if (!student.results) student.results = {};
         student.results[norm] = val;
-        const g = calculateGrade(norm, val, student.sex, parseInt(cls), student.group);
-        const wrapper = e.target.closest(".cell-wrapper") || e.target.closest(".norm-controls");
-        const badge = wrapper.querySelector(".grade-badge") || wrapper.querySelector(".norm-grade");
+        const g = calculateGrade(
+          norm,
+          val,
+          student.sex,
+          parseInt(cls),
+          student.group
+        );
+        const wrapper =
+          e.target.closest(".cell-wrapper") ||
+          e.target.closest(".norm-controls");
+        const badge =
+          wrapper.querySelector(".grade-badge") ||
+          wrapper.querySelector(".norm-grade");
         if (badge) {
-          badge.className = (badge.classList.contains("grade-badge") ? "grade-badge " : "norm-grade ") + g.css;
+          badge.className =
+            (badge.classList.contains("grade-badge")
+              ? "grade-badge "
+              : "norm-grade ") + g.css;
           badge.textContent = g.score;
         }
         saveData();
