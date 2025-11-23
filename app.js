@@ -601,8 +601,8 @@ function renderStudents() {
           </div>
           <div class="flex gap-2 w-full sm:w-auto">
              <button id="shareBtn" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-slate-200 transition" title="Поделиться (только мобильные)"><i class="fa-solid fa-share-nodes"></i></button>
-             <button id="downloadBtn" class="flex-1 sm:flex-none px-3 py-2 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200 transition"><i class="fa-solid fa-download mr-1"></i> Скачать</button>
-             <button class="flex-1 sm:flex-none px-3 py-2 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200 transition cursor-pointer text-center"><i class="fa-solid fa-upload mr-1"></i> Загрузить<input type="file" id="importFile" class="hidden" accept=".json"></button>
+             <button id="downloadBtn" class="flex-1 sm:flex-none px-3 py-2 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200 transition flex items-center justify-center"><i class="fa-solid fa-download mr-1"></i> Скачать</button>
+             <label class="flex-1 sm:flex-none px-3 py-2 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200 transition cursor-pointer flex items-center justify-center"><i class="fa-solid fa-upload mr-1"></i> Загрузить<input type="file" id="importFile" class="hidden" accept=".json"></label>
           </div>
        </div>
        <div id="stdList" class="flex-1 overflow-y-auto p-4 bg-slate-50"></div>
