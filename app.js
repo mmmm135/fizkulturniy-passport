@@ -684,6 +684,7 @@ function renderStudents() {
     reader.onload = (event) => {
       try {
         classesData = JSON.parse(event.target.result);
+        saveData(); // SAVE FIX
         validateAndRepairData();
         selectedClassKey = sortClasses(Object.keys(classesData))[0];
         renderStudents();
