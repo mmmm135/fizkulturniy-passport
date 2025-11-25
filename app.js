@@ -94,6 +94,24 @@
     }
     .floating.active label { top: 10px; transform: none; font-size: 11px; font-weight: 600; color: #3b82f6; }
     .floating input:focus, .floating select:focus { border-color: #3b82f6; ring: 2px; ring-color: #eff6ff; }
+    
+    /* Parallel Filter Buttons */
+    .parallel-btn {
+        width: 36px; height: 36px; border-radius: 50%; font-weight: 700; font-size: 14px;
+        display: flex; align-items: center; justify-content: center;
+        background: #f1f5f9; color: #64748b; transition: all 0.2s;
+    }
+    .parallel-btn:hover { background: #e2e8f0; color: #475569; }
+    .parallel-btn.active { background: #2563eb; color: white; box-shadow: 0 4px 6px -2px rgba(37, 99, 235, 0.3); }
+
+    /* Class Filter Pills */
+    .class-pill {
+        border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px;
+        font-size: 12px; font-weight: 600; color: #64748b; cursor: pointer;
+        transition: all 0.2s; background: white; text-align: center;
+    }
+    .class-pill:hover { border-color: #cbd5e1; }
+    .class-pill.active { background: #eff6ff; border-color: #3b82f6; color: #2563eb; }
   `;
   const style = document.createElement("style");
   style.textContent = css;
@@ -317,6 +335,7 @@ let filterState = {
   sex: "all",
   performance: "all",
   selectedNorms: [],
+  selectedClasses: [], // New: Store selected classes
 };
 
 function sortClasses(keys) {
@@ -408,6 +427,130 @@ function calculateGrade(normKey, value, sex, classNum, group) {
   return { score: score, css: `g-${score}`, val: score };
 }
 
+// Helper to calculate student average for sorting/filtering
+function calculateStudentAverage(student, normsList) {
+  const normsToCheck = normsList || Object.keys(EXERCISES);
+  let sum = 0;
+  let count = 0;
+
+  normsToCheck.forEach((n) => {
+    const res = student.results?.[n];
+    if (res) {
+      const g = calculateGrade(
+        n,
+        res,
+        student.sex,
+        student.className,
+        student.group
+      );
+      if (g.val !== null && g.val !== 0) {
+        // Only count actual scores
+        sum += g.val;
+        count++;
+      }
+    }
+  });
+
+  return { avg: count === 0 ? 0 : sum / count, count };
+}
+
+function generatePDF(students, norms) {
+  if (!window.pdfMake) {
+    alert("Библиотека PDF еще не загрузилась. Попробуйте через секунду.");
+    return;
+  }
+
+  const headers = [
+    { text: "Ученик", style: "tableHeader" },
+    { text: "Класс", style: "tableHeader" },
+    { text: "Пол", style: "tableHeader" },
+    { text: "Гр.", style: "tableHeader" },
+    ...norms.map((n) => ({
+      text: EXERCISES[n].label,
+      style: "tableHeader",
+      fontSize: 8,
+    })),
+  ];
+
+  const body = [headers];
+
+  students.forEach((s) => {
+    const row = [
+      { text: s.name, style: "cell" },
+      { text: s.className, style: "cell", alignment: "center" },
+      {
+        text: s.sex === "Мужской" ? "М" : "Ж",
+        style: "cell",
+        alignment: "center",
+      },
+      { text: s.group.substring(0, 3), style: "cell", alignment: "center" },
+    ];
+
+    norms.forEach((n) => {
+      const val = s.results[n] || "";
+      const g = calculateGrade(n, val, s.sex, parseInt(s.className), s.group);
+      row.push({
+        text: g.score !== "-" ? g.score : "",
+        style: "cell",
+        alignment: "center",
+        fillColor:
+          g.val && g.val >= 9
+            ? "#dcfce7"
+            : g.val && g.val <= 4
+            ? "#fee2e2"
+            : null,
+      });
+    });
+
+    body.push(row);
+  });
+
+  const docDefinition = {
+    pageOrientation: "landscape",
+    pageSize: "A4",
+    pageMargins: [20, 20, 20, 20],
+    content: [
+      {
+        text: `Журнал нормативов (${new Date().toLocaleDateString()})`,
+        style: "header",
+      },
+      {
+        table: {
+          headerRows: 1,
+          widths: ["auto", "auto", "auto", "auto", ...norms.map(() => "*")],
+          body: body,
+        },
+        layout: "lightHorizontalLines",
+      },
+    ],
+    styles: {
+      header: {
+        fontSize: 18,
+        bold: true,
+        margin: [0, 0, 0, 10],
+      },
+      tableHeader: {
+        bold: true,
+        fontSize: 10,
+        color: "black",
+        fillColor: "#f1f5f9",
+        margin: [0, 2, 0, 2],
+      },
+      cell: {
+        fontSize: 10,
+        margin: [0, 2, 0, 2],
+      },
+    },
+    defaultStyle: {
+      font: "Roboto",
+    },
+  };
+
+  pdfMake
+    .createPdf(docDefinition)
+    .download(`journal_${new Date().toLocaleDateString()}.pdf`);
+}
+
 // ======= 3. UI Core =======
 window.switchView = (view) => {
   currentView = view;
@@ -448,7 +591,6 @@ window.downloadData = async () => {
   const date = new Date().toLocaleDateString("ru-RU").replace(/\./g, "-");
   const fileName = `fizra_db_${date}.json`;
 
-  // Обычное скачивание (Fallback для ПК)
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(json);
   const node = document.createElement("a");
   node.href = dataStr;
@@ -509,7 +651,6 @@ window.editStudent = (id) => {
     idInput.value = student.id;
     document.getElementById("mName").value = student.name;
 
-    // Set Radio for Sex
     const sexRadio = document.querySelector(
       `input[name="mSex"][value="${student.sex}"]`
     );
@@ -520,8 +661,8 @@ window.editStudent = (id) => {
 
     document.querySelectorAll(".floating").forEach((el) => {
       const inp = el.querySelector("input, select");
-      if (inp && inp.value) el.classList.add("active"); // Ensure active class
-      else if (inp && inp.tagName === "SELECT") el.classList.add("active"); // Selects always active
+      if (inp && inp.value) el.classList.add("active");
+      else if (inp && inp.tagName === "SELECT") el.classList.add("active");
 
       el.querySelector("input, select")?.classList.remove("input-error");
       const err = el.querySelector(".error-text");
@@ -615,14 +756,13 @@ function renderStudents() {
              <span>Ученик</span>
              <button type="button" class="text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full hover:bg-slate-100 closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
           </div>
-          <div class="p-8 space-y-4"> <!-- Increased spacing -->
+          <div class="p-8 space-y-4"> 
              <input type="hidden" id="mId">
              <div class="floating">
                 <input type="text" id="mName" placeholder=" ">
                 <label>ФИО Ученика</label>
              </div>
              
-             <!-- Radio Buttons for Gender -->
              <div>
                 <label class="block text-sm font-bold text-slate-700 mb-2">Пол</label>
                 <div class="flex gap-2 bg-slate-50 p-1 rounded-xl">
@@ -642,7 +782,7 @@ function renderStudents() {
                 <label>Год рожд.</label>
              </div>
 
-             <div class="floating active"> <!-- Force active for select -->
+             <div class="floating active">
                 <select id="mGroup"><option>Основная</option><option>Подготовительная</option><option>СМГ</option><option>ЛФК</option></select>
                 <label>Группа</label>
              </div>
@@ -684,7 +824,7 @@ function renderStudents() {
     reader.onload = (event) => {
       try {
         classesData = JSON.parse(event.target.result);
-        saveData(); // SAVE FIX
+        saveData();
         validateAndRepairData();
         selectedClassKey = sortClasses(Object.keys(classesData))[0];
         renderStudents();
@@ -702,7 +842,6 @@ function renderStudents() {
     document.getElementById("mName").value = "";
     document.getElementById("mYear").value = "";
 
-    // Reset Gender to Male default
     const maleRadio = document.querySelector(
       'input[name="mSex"][value="Мужской"]'
     );
@@ -727,7 +866,7 @@ function renderStudents() {
   };
   document.querySelector(".closeModalBtn").onclick = () => modal.close();
   document.getElementById("downloadBtn").onclick = window.downloadData;
-  document.getElementById("shareBtn").onclick = window.shareData; // Share logic
+  document.getElementById("shareBtn").onclick = window.shareData;
 
   const delBtn = document.getElementById("mDelete");
   if (delBtn) {
@@ -818,7 +957,6 @@ function renderStudents() {
       inp.addEventListener("blur", check);
       inp.addEventListener("input", check);
       inp.addEventListener("change", check);
-      // Initial check
       check();
     });
   renderStudentList();
@@ -875,7 +1013,13 @@ function renderJournal() {
     "Сначала мальчики",
     "Сначала девочки",
     "По группе",
+    "По успеваемости (лучшие)",
+    "По успеваемости (худшие)",
   ];
+
+  // Variables to hold current state for PDF generation
+  let currentFilteredList = [];
+  let currentViewNorms = [];
 
   if (
     !selectedClassKey ||
@@ -923,6 +1067,9 @@ function renderJournal() {
              <button id="sortBtn" class="flex-1 sm:flex-none px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm font-bold transition flex items-center gap-2 ml-auto sm:ml-0">
                  <i class="fa-solid fa-arrow-down-a-z"></i> <span class="hidden sm:inline">${sortLabels[sortState]}</span>
              </button>
+             <button id="pdfBtn" class="px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl text-sm font-bold transition flex items-center gap-2" title="Сохранить в PDF">
+                <i class="fa-solid fa-file-pdf"></i> <span class="hidden sm:inline">PDF</span>
+             </button>
           </div>
           <div class="hidden sm:flex items-center gap-2 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg">
              <i class="fa-solid fa-check"></i> Автосохранение
@@ -932,13 +1079,20 @@ function renderJournal() {
     </div>
 
     <!-- Filter Modal -->
-    <dialog id="filterModal" class="rounded-2xl shadow-2xl p-0 w-full max-w-[400px] backdrop:bg-black/40">
+    <dialog id="filterModal" class="rounded-2xl shadow-2xl p-0 w-full max-w-[450px] backdrop:bg-black/40">
         <form method="dialog" class="bg-white flex flex-col h-full max-h-[85vh]">
             <div class="p-6 border-b font-bold flex justify-between items-center text-xl text-slate-800">
                 <span>Фильтры</span>
                 <button type="button" class="text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full hover:bg-slate-100 closeFilterBtn"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto space-y-5 flex-1">
+            <div class="p-6 overflow-y-auto space-y-6 flex-1">
+                
+                <!-- Классы -->
+                <div>
+                     <label class="block text-sm font-bold text-slate-700 mb-2">Классы</label>
+                     <div id="filterClassContainer" class="space-y-3"></div>
+                </div>
+
                 <!-- Год рождения -->
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Год рождения</label>
@@ -1010,16 +1164,26 @@ function renderJournal() {
   const editFilterBtn = document.getElementById("editFilterBtn");
   if (editFilterBtn) editFilterBtn.onclick = openFilterModal;
 
+  // Attach PDF Handler
+  document.getElementById("pdfBtn").onclick = () => {
+    if (currentFilteredList.length > 0) {
+      generatePDF(currentFilteredList, currentViewNorms);
+    } else {
+      alert("Нет данных для экспорта");
+    }
+  };
+
   const resetFiltersBtn = document.getElementById("resetFiltersBtn");
   if (resetFiltersBtn)
     resetFiltersBtn.onclick = () => {
       filterState.active = false;
+      filterState.selectedClasses = []; // Reset selected classes
       renderJournal();
     };
 
   const sortBtn = document.getElementById("sortBtn");
   sortBtn.onclick = () => {
-    sortState = (sortState + 1) % 6;
+    sortState = (sortState + 1) % 8; // Increased modulo for new sort types
     const span = sortBtn.querySelector("span");
     if (span) span.textContent = sortLabels[sortState];
     refresh();
@@ -1028,6 +1192,11 @@ function renderJournal() {
   const refresh = () => {
     if (!filterState.active)
       selectedClassKey = cSel ? cSel.value : selectedClassKey;
+
+    const normsToRender =
+      filterState.active && filterState.selectedNorms.length > 0
+        ? filterState.selectedNorms
+        : Object.keys(EXERCISES);
 
     // FETCH LOGIC
     let list = [];
@@ -1041,6 +1210,11 @@ function renderJournal() {
 
       // Apply Filters
       list = list.filter((s) => {
+        // Class Filter
+        if (filterState.selectedClasses.length > 0) {
+          if (!filterState.selectedClasses.includes(s.className)) return false;
+        }
+
         // Year
         if (filterState.minYear && (!s.year || s.year < filterState.minYear))
           return false;
@@ -1049,27 +1223,13 @@ function renderJournal() {
         // Sex
         if (filterState.sex !== "all" && s.sex !== filterState.sex)
           return false;
-        // Performance check needs iteration over norms
+
+        // Performance
         if (filterState.performance !== "all") {
-          let sum = 0;
-          let count = 0;
-          const normsToCheck =
-            filterState.selectedNorms.length > 0
-              ? filterState.selectedNorms
-              : Object.keys(EXERCISES);
+          const { avg, count } = calculateStudentAverage(s, normsToRender);
 
-          normsToCheck.forEach((n) => {
-            const res = s.results?.[n];
-            if (res) {
-              const g = calculateGrade(n, res, s.sex, s.className, s.group);
-              if (g.val !== null) {
-                sum += g.val;
-                count++;
-              }
-            }
-          });
-
-          const avg = count === 0 ? 0 : sum / count;
+          // New Requirement: Hide if count is 0
+          if (count === 0) return false;
 
           if (filterState.performance === "high" && avg < 9) return false;
           if (filterState.performance === "good" && (avg < 6 || avg >= 9))
@@ -1100,9 +1260,23 @@ function renderJournal() {
         const order = { Основная: 0, Подготовительная: 1, СМГ: 2, ЛФК: 3 };
         if (order[a.group] !== order[b.group])
           return order[a.group] - order[b.group];
+      } else if (sortState === 6) {
+        // Best performance
+        const avgA = calculateStudentAverage(a, normsToRender).avg;
+        const avgB = calculateStudentAverage(b, normsToRender).avg;
+        return avgB - avgA;
+      } else if (sortState === 7) {
+        // Worst performance
+        const avgA = calculateStudentAverage(a, normsToRender).avg;
+        const avgB = calculateStudentAverage(b, normsToRender).avg;
+        return avgA - avgB;
       }
       return a.name.localeCompare(b.name);
     });
+
+    // Update variables for PDF generator
+    currentFilteredList = list;
+    currentViewNorms = normsToRender;
 
     const content = document.getElementById("jContent");
     const emptyMsg = filterState.active
@@ -1120,11 +1294,6 @@ function renderJournal() {
       return;
     }
 
-    const normsToRender =
-      filterState.active && filterState.selectedNorms.length > 0
-        ? filterState.selectedNorms
-        : Object.keys(EXERCISES);
-
     try {
       if (window.innerWidth < 768)
         renderMobileJournal(content, list, normsToRender);
@@ -1135,7 +1304,6 @@ function renderJournal() {
     }
   };
 
-  // FIX: Реакция только на изменение ширины
   let lastWidth = window.innerWidth;
   const onResize = () => {
     if (window.innerWidth !== lastWidth) {
@@ -1150,16 +1318,14 @@ function renderJournal() {
   window.addEventListener("resize", onResize);
 
   setTimeout(refresh, 0);
-  if (filterState.active) {
-    // Logic handled inside renderJournal's HTML generation
-  }
 }
 
 function openFilterModal() {
   const modal = document.getElementById("filterModal");
   const normsContainer = document.getElementById("fNormsContainer");
+  const classContainer = document.getElementById("filterClassContainer");
 
-  // Fill norms checkboxes
+  // === 1. Render Norms ===
   normsContainer.innerHTML = Object.keys(EXERCISES)
     .map(
       (key) => `
@@ -1175,7 +1341,102 @@ function openFilterModal() {
     )
     .join("");
 
-  // Set other values
+  // === 2. Render Classes ===
+  const allClasses = sortClasses(Object.keys(classesData));
+  const uniqueNumbers = [
+    ...new Set(allClasses.map((c) => parseInt(c) || c.replace(/\D/g, ""))),
+  ].sort((a, b) => a - b);
+
+  let parallelsHtml = uniqueNumbers
+    .map(
+      (num) => `
+    <button type="button" class="parallel-btn ${
+      checkParallelActive(num, allClasses) ? "active" : ""
+    }" data-num="${num}">${num}</button>
+  `
+    )
+    .join("");
+
+  let classesGridHtml = allClasses
+    .map(
+      (cls) => `
+    <div class="class-pill ${
+      filterState.selectedClasses.includes(cls) ? "active" : ""
+    }" data-cls="${cls}">${cls}</div>
+  `
+    )
+    .join("");
+
+  classContainer.innerHTML = `
+    <div class="flex gap-2 flex-wrap mb-3">${parallelsHtml}</div>
+    <div class="grid grid-cols-4 sm:grid-cols-6 gap-2">${classesGridHtml}</div>
+  `;
+
+  // Attach events for classes
+  const updateVisuals = () => {
+    document.querySelectorAll(".class-pill").forEach((pill) => {
+      const cls = pill.dataset.cls;
+      if (selectedClassesTemp.includes(cls)) pill.classList.add("active");
+      else pill.classList.remove("active");
+    });
+    document.querySelectorAll(".parallel-btn").forEach((btn) => {
+      const num = btn.dataset.num;
+      // Check if ALL classes of this parallel are selected
+      const parallelClasses = allClasses.filter(
+        (c) => (parseInt(c) || c.replace(/\D/g, "")) == num
+      );
+      const allSelected = parallelClasses.every((c) =>
+        selectedClassesTemp.includes(c)
+      );
+      if (allSelected && parallelClasses.length > 0)
+        btn.classList.add("active");
+      else btn.classList.remove("active");
+    });
+  };
+
+  let selectedClassesTemp = [...filterState.selectedClasses];
+
+  // Parallel click logic
+  classContainer.querySelectorAll(".parallel-btn").forEach((btn) => {
+    btn.onclick = () => {
+      const num = btn.dataset.num;
+      const parallelClasses = allClasses.filter(
+        (c) => (parseInt(c) || c.replace(/\D/g, "")) == num
+      );
+
+      const allSelected = parallelClasses.every((c) =>
+        selectedClassesTemp.includes(c)
+      );
+
+      if (allSelected) {
+        // Deselect all
+        selectedClassesTemp = selectedClassesTemp.filter(
+          (c) => !parallelClasses.includes(c)
+        );
+      } else {
+        // Select all
+        parallelClasses.forEach((c) => {
+          if (!selectedClassesTemp.includes(c)) selectedClassesTemp.push(c);
+        });
+      }
+      updateVisuals();
+    };
+  });
+
+  // Individual class click logic
+  classContainer.querySelectorAll(".class-pill").forEach((pill) => {
+    pill.onclick = () => {
+      const cls = pill.dataset.cls;
+      if (selectedClassesTemp.includes(cls)) {
+        selectedClassesTemp = selectedClassesTemp.filter((c) => c !== cls);
+      } else {
+        selectedClassesTemp.push(cls);
+      }
+      updateVisuals();
+    };
+  });
+
+  // === 3. Set Other Values ===
   document.getElementById("fYearMin").value = filterState.minYear || "";
   document.getElementById("fYearMax").value = filterState.maxYear || "";
   document.getElementById("fPerformance").value = filterState.performance;
@@ -1184,7 +1445,7 @@ function openFilterModal() {
   );
   if (sexRadio) sexRadio.checked = true;
 
-  // Handlers
+  // === 4. Handlers ===
   document.querySelector(".closeFilterBtn").onclick = () => modal.close();
   document.getElementById("applyFiltersBtn").onclick = () => {
     // Read values
@@ -1204,12 +1465,24 @@ function openFilterModal() {
       .forEach((cb) => selectedNorms.push(cb.value));
     filterState.selectedNorms = selectedNorms;
 
+    // Save selected classes
+    filterState.selectedClasses = selectedClassesTemp;
+
     filterState.active = true;
     renderJournal(); // Re-render whole view to update header
     modal.close();
   };
 
   modal.showModal();
+}
+
+// Helper for UI state of parallel buttons
+function checkParallelActive(num, allClasses) {
+  const parallelClasses = allClasses.filter(
+    (c) => (parseInt(c) || c.replace(/\D/g, "")) == num
+  );
+  if (parallelClasses.length === 0) return false;
+  return parallelClasses.every((c) => filterState.selectedClasses.includes(c));
 }
 
 function renderDesktopJournal(container, students, norms) {
