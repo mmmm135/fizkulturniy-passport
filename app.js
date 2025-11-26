@@ -323,31 +323,11 @@ const NORMS = {
 
 // ======= 2. Данные и Логика =======
 let classesData = JSON.parse(localStorage.getItem("classesData")) || {};
-let DB = await loadInitialDB();
 let currentView = "dashboard";
 let selectedClassKey = null;
 let sortState = 0;
 
-async function loadInitialDB() {
-  const url = window.DB_FILE;
-
-  try {
-    const response = await fetch(url);
-    const json = await response.json();
-
-    // если в localStorage нет БД – загружаем из файла
-    if (!localStorage.getItem("fizra_db")) {
-      localStorage.setItem("fizra_db", JSON.stringify(json));
-      console.log("База загружена из файла");
-    }
-
-    return JSON.parse(localStorage.getItem("fizra_db"));
-  } catch (err) {
-    console.error("Ошибка загрузки JSON:", err);
-    return {};
-  }
-}
-
+// STATE FOR FILTERS
 let filterState = {
   active: false,
   minYear: null,
@@ -384,16 +364,58 @@ function validateAndRepairData() {
   }
   if (fixed) saveData();
 }
-validateAndRepairData();
+
+async function loadDefaultData() {
+  // Проверяем, есть ли данные в localStorage.
+  // Если там пусто, пробуем загрузить файл по умолчанию.
+  const hasData = localStorage.getItem("classesData");
+
+  if (!hasData && window.DB_FILE) {
+    try {
+      console.log(`Загрузка базы данных по умолчанию: ${window.DB_FILE}`);
+      const response = await fetch(window.DB_FILE);
+
+      if (response.ok) {
+        const data = await response.json();
+        classesData = data;
+        saveData();
+        console.log("База данных успешно загружена и сохранена.");
+
+        // Обновляем UI, если приложение уже запущено
+        if (currentView === "dashboard") renderDashboard();
+        if (currentView === "students") {
+          const keys = sortClasses(Object.keys(classesData));
+          if (keys.length > 0 && !selectedClassKey) selectedClassKey = keys[0];
+          renderStudents();
+        }
+        showToast("База данных загружена");
+      } else {
+        console.warn("Не удалось загрузить файл базы данных (HTTP error).");
+      }
+    } catch (error) {
+      console.warn("Ошибка при загрузке базы данных (возможно CORS):", error);
+    }
+  } else {
+    // Если данные уже были, просто валидируем структуру
+    validateAndRepairData();
+  }
+}
+
+// Запускаем инициализацию
+loadDefaultData();
 
 function saveData() {
   localStorage.setItem("classesData", JSON.stringify(classesData));
   showToast();
 }
 
-function showToast() {
+function showToast(msg) {
   const toast = document.getElementById("toast");
+  const toastMsg = document.getElementById("toastMsg");
   if (toast) {
+    if (msg) toastMsg.innerText = msg;
+    else toastMsg.innerText = "Сохранено";
+
     toast.classList.remove("translate-y-20", "opacity-0");
     setTimeout(() => {
       toast.classList.add("translate-y-20", "opacity-0");
