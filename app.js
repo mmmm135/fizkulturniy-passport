@@ -1120,8 +1120,8 @@ function renderJournal() {
        <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row gap-3 justify-between items-center bg-white rounded-t-2xl z-20">
           <div class="flex gap-2 w-full sm:w-auto items-center">
              ${headerControls}
-             <button id="sortBtn" class="flex-1 sm:flex-none px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm font-bold transition flex items-center gap-2 ml-auto sm:ml-0">
-                 <i class="fa-solid fa-arrow-down-a-z"></i> <span class="hidden sm:inline">${sortLabels[sortState]}</span>
+             <button id="sortBtn" class="flex-1 sm:flex-none px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm font-bold transition flex items-center justify-center gap-2 ml-auto sm:ml-0">
+                 <i class="fa-solid fa-arrow-down-a-z"></i> <span class="truncate max-w-[120px] sm:max-w-none">${sortLabels[sortState]}</span>
              </button>
              <button id="pdfBtn" class="px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl text-sm font-bold transition flex items-center gap-2" title="Сохранить в PDF">
                 <i class="fa-solid fa-file-pdf"></i> <span class="hidden sm:inline">PDF</span>
