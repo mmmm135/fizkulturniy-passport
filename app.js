@@ -631,12 +631,15 @@ window.switchView = (view) => {
 window.downloadData = async () => {
   const json = JSON.stringify(classesData);
   const date = new Date().toLocaleDateString("ru-RU").replace(/\./g, "-");
-  const fileName = `fizra_db_${date}.json`;
+  
+  const filename = 'fizra_db.json';
 
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(json);
   const node = document.createElement("a");
   node.href = dataStr;
-  node.download = fileName;
+  
+  node.download = filename; 
+  
   document.body.appendChild(node);
   node.click();
   node.remove();
