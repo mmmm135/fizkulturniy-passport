@@ -323,11 +323,31 @@ const NORMS = {
 
 // ======= 2. Данные и Логика =======
 let classesData = JSON.parse(localStorage.getItem("classesData")) || {};
+let DB = await loadInitialDB();
 let currentView = "dashboard";
 let selectedClassKey = null;
 let sortState = 0;
 
-// STATE FOR FILTERS
+async function loadInitialDB() {
+  const url = window.DB_FILE;
+
+  try {
+    const response = await fetch(url);
+    const json = await response.json();
+
+    // если в localStorage нет БД – загружаем из файла
+    if (!localStorage.getItem("fizra_db")) {
+      localStorage.setItem("fizra_db", JSON.stringify(json));
+      console.log("База загружена из файла");
+    }
+
+    return JSON.parse(localStorage.getItem("fizra_db"));
+  } catch (err) {
+    console.error("Ошибка загрузки JSON:", err);
+    return {};
+  }
+}
+
 let filterState = {
   active: false,
   minYear: null,
