@@ -369,28 +369,32 @@ async function loadDefaultData() {
   // Проверяем, есть ли данные в localStorage.
   // Если там пусто, пробуем загрузить файл по умолчанию.
   const hasData = localStorage.getItem("classesData");
+  
+  // Используем глобальную переменную, заданную в HTML, или дефолтное значение 'fizra_db.json'
+  const fileName = window.DB_FILE || 'fizra_db.json';
 
-  if (!hasData && window.DB_FILE) {
+  if (!hasData) {
     try {
-      console.log(`Загрузка базы данных по умолчанию: ${window.DB_FILE}`);
-      const response = await fetch(window.DB_FILE);
-
+      console.log(`Загрузка базы данных по умолчанию: ${fileName}`);
+      const response = await fetch(fileName);
+      
       if (response.ok) {
         const data = await response.json();
         classesData = data;
         saveData();
         console.log("База данных успешно загружена и сохранена.");
-
+        
         // Обновляем UI, если приложение уже запущено
         if (currentView === "dashboard") renderDashboard();
         if (currentView === "students") {
-          const keys = sortClasses(Object.keys(classesData));
-          if (keys.length > 0 && !selectedClassKey) selectedClassKey = keys[0];
-          renderStudents();
+            const keys = sortClasses(Object.keys(classesData));
+            if (keys.length > 0 && !selectedClassKey) selectedClassKey = keys[0];
+            renderStudents();
         }
         showToast("База данных загружена");
       } else {
         console.warn("Не удалось загрузить файл базы данных (HTTP error).");
+        showToast("Ошибка загрузки: файл не найден (" + fileName + ")", "error");
       }
     } catch (error) {
       console.warn("Ошибка при загрузке базы данных (возможно CORS):", error);
@@ -409,17 +413,26 @@ function saveData() {
   showToast();
 }
 
-function showToast(msg) {
+function showToast(msg, type = 'success') {
   const toast = document.getElementById("toast");
   const toastMsg = document.getElementById("toastMsg");
+  const icon = toast.querySelector("i");
+  
   if (toast) {
-    if (msg) toastMsg.innerText = msg;
+    if(msg) toastMsg.innerText = msg;
     else toastMsg.innerText = "Сохранено";
-
+    
+    // Меняем стиль в зависимости от типа
+    if (type === 'error') {
+        icon.className = "fa-solid fa-circle-exclamation text-red-400";
+    } else {
+        icon.className = "fa-solid fa-circle-check text-emerald-400";
+    }
+    
     toast.classList.remove("translate-y-20", "opacity-0");
     setTimeout(() => {
       toast.classList.add("translate-y-20", "opacity-0");
-    }, 2000);
+    }, 3000);
   }
 }
 
@@ -631,15 +644,13 @@ window.switchView = (view) => {
 window.downloadData = async () => {
   const json = JSON.stringify(classesData);
   const date = new Date().toLocaleDateString("ru-RU").replace(/\./g, "-");
-  
+  // Используем короткое имя для скачивания и последующей перезаливки
   const filename = 'fizra_db.json';
 
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(json);
   const node = document.createElement("a");
   node.href = dataStr;
-  
-  node.download = filename; 
-  
+  node.download = filename;
   document.body.appendChild(node);
   node.click();
   node.remove();
